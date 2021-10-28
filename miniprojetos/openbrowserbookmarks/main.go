@@ -1,11 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 )
 
 func main() {
-	bookmarkFolder := getBookmarkFolder("mangas")
+	if len(os.Args) == 1 {
+		fmt.Println("No bookmark folder provided")
+		return
+	}
+	bookmarkFolderName := os.Args[1]
+	bookmarkFolder := getBookmarkFolder(bookmarkFolderName)
 	links := getBookmarkFolderLinks(bookmarkFolder)
 
 	args := []string{"--new-window"}
