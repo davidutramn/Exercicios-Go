@@ -12,8 +12,8 @@ func main() {
 	wordcount("file.txt")
 }
 
-func wordcount(filename string) {
-	file, err := os.Open(filename)
+func wordcount(filepath string) {
+	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,10 +22,10 @@ func wordcount(filename string) {
 	wordlist := make(map[string]int)
 	scanner := bufio.NewScanner(file)
 
+	scanner.Split(bufio.ScanWords)
+
 	for scanner.Scan() {
-		for _, word := range strings.Fields(scanner.Text()) {
-			wordlist[word]++
-		}
+		wordlist[strings.ToLower(scanner.Text())]++
 	}
 
 	for word, count := range wordlist {
