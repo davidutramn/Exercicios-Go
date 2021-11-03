@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -13,7 +14,11 @@ func main() {
 	}
 
 	username := args[0]
-	user := getUser(username)
+
+	user, err := getUser(username)
+	if err != nil {
+		log.Panic(err)
+	}
 
 	fmt.Printf("%#v", user)
 }

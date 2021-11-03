@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -43,18 +42,18 @@ type GitHubUser struct {
 	ReceivedEventsURL string `json:"received_events_url"`
 }
 
-func getUser(username string) *GitHubUser {
+func getUser(username string) (*GitHubUser, error) {
 	resp, err := http.Get(GitHubUsersURL + username)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var user GitHubUser
 	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return &user
+	return &user, nil
 }
