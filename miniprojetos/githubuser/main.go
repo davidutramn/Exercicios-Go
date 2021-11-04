@@ -1,48 +1,31 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
+	"net/http"
 )
 
 func main() {
-	args := os.Args[1:]
-	if len(args) == 0 {
-		fmt.Println("Username not provided")
-		os.Exit(0)
-	}
+	http.HandleFunc("/user", userHandler)
+	http.ListenAndServe(":8080", nil)
+}
 
-	username := args[0]
+func userHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		w.WriteHeader(400)
+		w.Write([]byte("No username provided"))
+		return
+	}
 
 	user, err := getUser(username)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	printUser(user)
-}
-
-func printUser(user *GitHubUser) {
-	fmt.Println("Login", user.Login)
-	fmt.Println("ID", user.ID)
-	fmt.Println("NodeID", user.NodeID)
-	fmt.Println("AvatarURL", user.AvatarURL)
-	fmt.Println("GravatarID", user.GravatarID)
-	fmt.Println("Type", user.Type)
-	fmt.Println("SiteAdmin", user.SiteAdmin)
-	fmt.Println("Name", user.Name)
-	fmt.Println("Company", user.Company)
-	fmt.Println("Blog", user.Blog)
-	fmt.Println("Location", user.Location)
-	fmt.Println("Email", user.Email)
-	fmt.Println("Hireable", user.Hireable)
-	fmt.Println("Bio", user.Bio)
-	fmt.Println("TwitterUsername", user.TwitterUsername)
-	fmt.Println("PublicRepos", user.PublicRepos)
-	fmt.Println("PublicGists", user.PublicGists)
-	fmt.Println("Followers", user.Followers)
-	fmt.Println("Following", user.Following)
-	fmt.Println("CreatedAt", user.CreatedAt)
-	fmt.Println("UpdatedAt", user.UpdatedAt)
+	w.Header().Set("Content-Type", "text/html")
+	err = userTemplate.Execute(w, user)
+	if err != nil {
+		log.Panic(err)
+	}
 }
